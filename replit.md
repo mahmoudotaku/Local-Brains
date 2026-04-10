@@ -78,6 +78,22 @@ artifacts/agent/src/
 - `GEMINI_API_KEY` — from aistudio.google.com
 - `TELEGRAM_ALLOWED_USER_IDS` — comma-separated Telegram user IDs
 
+### Railway Deployment
+
+The project is ready to deploy on [railway.app](https://railway.app). Three files handle this:
+- `Dockerfile` — multi-stage Node.js 24 build with Python3 for better-sqlite3 compilation
+- `railway.json` — Railway config (uses Dockerfile builder, restarts on failure)
+- `.dockerignore` — excludes api-server, mockup-sandbox, node_modules, db files
+
+**Required Railway environment variables** (set in Railway dashboard → Variables):
+- `TELEGRAM_BOT_TOKEN`
+- `GROQ_API_KEY`
+- `GEMINI_API_KEY`
+- `TELEGRAM_ALLOWED_USER_IDS`
+- `DB_PATH` = `/data/memory.db`
+
+**SQLite persistence note:** Railway's filesystem is ephemeral by default. For persistent memory across deploys, add a Railway Volume mounted at `/data`.
+
 ### Scalability Notes
 
 The architecture is designed to be extended:

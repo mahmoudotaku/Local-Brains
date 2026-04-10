@@ -14,12 +14,12 @@
     "dotenv": "^16.4.7",
     "grammy": "^1.31.0",
     "groq-sdk": "^0.9.1",
+    "tsx": "catalog:",
     "zod": "^3.25.23"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "catalog:",
-    "tsx": "catalog:",
     "typescript": "~5.9.2"
   }
 }

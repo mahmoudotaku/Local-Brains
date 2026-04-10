@@ -1,0 +1,12 @@
+node_modules
+artifacts/api-server
+artifacts/mockup-sandbox
+**/.git
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/dist
+**/.env
+**/memory.db
+.local
+scripts
