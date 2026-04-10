@@ -32,17 +32,12 @@ export async function runAgentLoop(opts: AgentRunOptions): Promise<AgentRunResul
 
   const messages: LLMMessage[] = [
     { role: "system", content: systemPrompt },
-    ...history.map((m): LLMMessage => {
-      if (m.role === "tool") {
-        return {
-          role: "tool",
-          content: m.content,
-          toolCallId: m.toolName ?? "unknown",
-          toolName: m.toolName,
-        };
-      }
-      return { role: m.role as "user" | "assistant", content: m.content };
-    }),
+    ...history
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .map((m): LLMMessage => ({
+        role: m.role as "user" | "assistant",
+        content: m.content,
+      })),
   ];
 
   let iterations = 0;
@@ -62,12 +57,6 @@ export async function runAgentLoop(opts: AgentRunOptions): Promise<AgentRunResul
       };
       messages.push(assistantMsg);
 
-      messageStore.add(
-        userId,
-        "assistant",
-        JSON.stringify({ toolCalls: response.toolCalls, content: response.content })
-      );
-
       for (const toolCall of response.toolCalls) {
         console.log(`[Agent] Executing tool: ${toolCall.name}`);
         const result = await executeTool(toolCall, userId);
@@ -80,14 +69,14 @@ export async function runAgentLoop(opts: AgentRunOptions): Promise<AgentRunResul
         };
         messages.push(toolMsg);
 
-        messageStore.add(userId, "tool", result.result, result.name);
-        console.log(`[Agent] Tool result: ${result.result.substring(0, 100)}...`);
+        console.log(`[Agent] Tool result: ${result.result.substring(0, 100)}`);
       }
 
       continue;
     }
 
-    const finalReply = response.content ?? "I'm sorry, I couldn't generate a response.";
+    const finalReply = response.content?.trim() || "I'm sorry, I couldn't generate a response.";
+
     messageStore.add(userId, "assistant", finalReply);
 
     return { reply: finalReply, iterations };

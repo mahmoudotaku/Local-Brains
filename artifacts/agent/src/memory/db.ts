@@ -47,6 +47,9 @@ function initSchema(db: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_messages_userId ON messages(userId);
     CREATE INDEX IF NOT EXISTS idx_memory_userId ON memory(userId);
   `);
+
+  db.prepare(`DELETE FROM messages WHERE role = 'tool'`).run();
+  db.prepare(`DELETE FROM messages WHERE role = 'assistant' AND content LIKE '{%toolCalls%'`).run();
 }
 
 export const messageStore = {
